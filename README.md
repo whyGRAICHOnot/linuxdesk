@@ -13,6 +13,18 @@ It creates a real extra monitor in KDE, streams it to your Android device's brow
 
 ## Install
 
+### Quick install (one command)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/whyGRAICHOnot/linuxdesk/main/linuxdesk_wayland.sh -o linuxdesk_wayland.sh
+less linuxdesk_wayland.sh      # optional: read it first (press q to quit)
+bash linuxdesk_wayland.sh
+```
+
+The installer downloads `linuxdesk_wayland.py` by itself, so this is all you need. Reading the script before running it is a good habit for anything that uses `sudo`.
+
+### Manual install (no internet link needed)
+
 You only need two files, saved in the **same folder**:
 
 - `linuxdesk_wayland.sh`
