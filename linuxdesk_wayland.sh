@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # LinuxDesk installer - Kubuntu / KDE Plasma (Wayland)
-# Run:  bash install.sh        (keep this file next to linuxdesk_wayland.py)
+# Run:  bash linuxdesk_wayland.sh        (keep this file next to linuxdesk_wayland.py)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PY_FILE="$SCRIPT_DIR/linuxdesk_wayland.py"
+
+# Where linuxdesk_wayland.py is downloaded from if it is NOT next to this script.
+# GitHub repo:  https://raw.githubusercontent.com/whyGRAICHOnot/linuxdesk/main
+# GitHub gist:  https://gist.githubusercontent.com/whyGRAICHOnot/GISTID/raw
+RAW_URL="https://raw.githubusercontent.com/whyGRAICHOnot/linuxdesk/main"
 
 # Add any extra programs you want installed at the same time inside the brackets.
 PACKAGES=(
@@ -24,9 +29,21 @@ if ! command -v apt >/dev/null 2>&1; then
   exit 1
 fi
 if [ ! -f "$PY_FILE" ]; then
-  echo "Can't find linuxdesk_wayland.py next to this script (looked in: $SCRIPT_DIR)."
-  echo "Download both files into the same folder and try again."
-  exit 1
+  case "$RAW_URL" in
+    *whyGRAICHOnot*)
+      echo "Can't find linuxdesk_wayland.py next to this script (looked in: $SCRIPT_DIR)."
+      echo "Download both files into the same folder and try again."
+      exit 1 ;;
+  esac
+  if ! command -v curl >/dev/null 2>&1; then
+    echo "==> Installing curl (needs your password)..."
+    sudo apt update && sudo apt install -y curl
+  fi
+  echo "==> Downloading linuxdesk_wayland.py..."
+  TMP_PY="$(mktemp)"
+  trap 'rm -f "$TMP_PY"' EXIT
+  curl -fsSL "$RAW_URL/linuxdesk_wayland.py" -o "$TMP_PY"
+  PY_FILE="$TMP_PY"
 fi
 if [ "${XDG_SESSION_TYPE:-}" != "wayland" ]; then
   echo "Note: you are not in a Wayland session. LinuxDesk (this version) needs KDE Plasma on Wayland."
